@@ -27,3 +27,5 @@ date_stubs.c
 fts_generated.ml
 fts_stubs.c
 libffi_abi.ml
+node_modules
+lib

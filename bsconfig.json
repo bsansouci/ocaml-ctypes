@@ -1,0 +1,10 @@
+{
+  "name": "ctypes",
+  "sources": "src",
+  "static_libraries": [
+    "_build/libctypes-foreign-base_stubs.a",
+    "_build/libctypes-foreign-threaded_stubs.a",
+    "_build/libctypes_stubs.a",
+    "_build/ctypes.a",
+  ]
+}

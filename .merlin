@@ -21,3 +21,12 @@ B _build/src/configure
 B _build/src/ctypes-foreign-base
 B _build/src/ctypes-foreign-unthreaded
 PKG bytes
+
+####{BSB GENERATED: NO EDIT
+FLG -ppx /Users/benjamin/Desktop/bucklescript/jscomp/bin/bsppx.exe
+S /Users/benjamin/Desktop/reprocessing/node_modules/bs-platform/lib/ocaml
+B /Users/benjamin/Desktop/reprocessing/node_modules/bs-platform/lib/ocaml
+FLG -nostdlib -no-alias-deps -color always
+S src
+B lib/bs/src
+####BSB GENERATED: NO EDIT}
