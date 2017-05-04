@@ -151,7 +151,7 @@ libffi.config: src/discover/commands.mli src/discover/commands.ml src/discover/d
 	./discover -ocamlc "$(OCAMLFIND) ocamlc" > $@ || (rm $@ && false)
 
 asneeded.config:
-	./src/discover/determine_as_needed_flags.sh >> $@
+	src/discover/determine_as_needed_flags.sh >> $@
 
 # dependencies
 depend: configure
