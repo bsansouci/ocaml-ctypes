@@ -1,6 +1,7 @@
 {
   "name": "ctypes",
   "sources": "src",
+  "bs-dependencies": ["libffi"],
   "static_libraries": [
     "_build/libctypes-foreign-base_stubs.a",
     "_build/libctypes-foreign-threaded_stubs.a",
