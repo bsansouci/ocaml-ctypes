@@ -7,6 +7,5 @@
     "_build/libctypes-foreign-threaded_stubs.a",
     "_build/libctypes_stubs.a",
     "_build/ctypes.a",
-  ],
-  "build_script": "eval $(dependencyEnv) && make XEN=${mirage_xen_enable:-disable} libffi.config && touch libffi.config && make XEN=${mirage_xen_enable:-disable} ctypes-base ctypes-stubs && make XEN=${mirage_xen_enable:-disable} ctypes-foreign"
+  ]
 }
