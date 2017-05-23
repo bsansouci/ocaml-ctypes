@@ -19,8 +19,7 @@ let read_output program =
   let output_filename = (Filename.chop_suffix input_filename ".c") ^ ".o" in
   let cwd = Sys.getcwd () in
   let cmd =
-    Printf.sprintf "%s ocamlc -verbose %s %s -c 1>&2"
-      (getenv ~default:"ocamlfind" "OCAMLFIND")
+    Printf.sprintf "ocamlc.opt -verbose %s %s -c 1>&2"
       ((getenv ~default:"" "CFLAGS") |>
        (nsplit " ") |>
        (List.map (fun s -> "-ccopt " ^ Filename.quote s)) |>

@@ -2,10 +2,10 @@
   "name": "ctypes",
   "description": "ctypes is a library for binding to C libraries using pure OCaml.  The primary aim is to make writing C extensions as straightforward as possible.",
   "dependencies": {
-    "libffi": "bsansouci/libffi#bsb-support",
-    "@opam-alpha/ocamlfind": "*",
-    "dependency-env": "npm-ml/dependency-env",
-    "nopam": "yunxing/nopam"
+    "libffi": "bsansouci/libffi#bsb-support"
+  },
+  "devDependencies": {
+    "bs-platform": "bsansouci/bucklescript#simple-native-compilation"
   },
   "peerDependencies": {
     "@opam-alpha/ocaml": ">= 4.01.0"

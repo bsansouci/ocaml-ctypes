@@ -1,14 +1,14 @@
 .SECONDEXPANSION:
 
-BEST:=$(shell if ocamlopt > /dev/null 2>&1; then echo native; else echo byte; fi)
-OPAQUE:=$(shell if ocamlopt -opaque 2>/dev/null; then echo -opaque; fi) 
+BEST:=$(shell if ocamlopt.opt > /dev/null 2>&1; then echo native; else echo byte; fi)
+OPAQUE:=$(shell if ocamlopt.opt -opaque 2>/dev/null; then echo -opaque; fi)
 DEBUG=true
 COVERAGE=false
 OCAML=ocaml
-OCAMLFIND=ocamlfind $(OCAMLFINDFLAGS)
-HOSTOCAMLFIND=$(OCAMLFIND)
-OCAMLDEP=$(OCAMLFIND) ocamldep
-OCAMLMKLIB=$(OCAMLFIND) ocamlmklib
+# OCAMLFIND=ocamlfind $(OCAMLFINDFLAGS)
+# HOSTOCAMLFIND=$(OCAMLFIND)
+OCAMLDEP=bsdep.exe
+OCAMLMKLIB=ocamlmklib
 VPATH=src examples
 BUILDDIR=_build
 BASE_PROJECTS=configure libffi-abigen configured ctypes ctypes-top
@@ -25,8 +25,8 @@ GENERATED=src/ctypes/ctypes_primitives.ml	\
 OCAML_FFI_INCOPTS=$(libffi_opt)
 export CFLAGS DEBUG
 
-EXTDLL:=$(shell $(OCAMLFIND) ocamlc -config | awk '/^ext_dll:/{print $$2}')
-OSYSTEM:=$(shell $(OCAMLFIND) ocamlc -config | awk '/^system:/{print $$2}')
+EXTDLL:=$(shell ocamlc.opt -config | awk '/^ext_dll:/{print $$2}')
+OSYSTEM:=$(shell ocamlc.opt -config | awk '/^system:/{print $$2}')
 
 ifneq (,$(filter mingw%,$(OSYSTEM)))
 OS_ALT_SUFFIX=.win
@@ -50,7 +50,7 @@ ctypes.cmi_only = ctypes_static ctypes_primitive_types ctypes_structs
 ctypes.public = unsigned signed lDouble complexL ctypes posixTypes ctypes_types
 ctypes.dir = src/ctypes
 ctypes.extra_mls = ctypes_primitives.ml
-ctypes.deps = str bigarray bytes
+ctypes.deps = str bigarray
 ctypes.install = yes
 ctypes.install_native_objects = yes
 ifeq ($(XEN),enable)
@@ -65,7 +65,7 @@ cstubs.cmi_only = cstubs_internals
 cstubs.public = cstubs_structs cstubs cstubs_inverted
 cstubs.dir = src/cstubs
 cstubs.subproject_deps = ctypes
-cstubs.deps = str bytes
+cstubs.deps = str
 cstubs.install = yes
 cstubs.install_native_objects = yes
 
@@ -78,11 +78,11 @@ ctypes-foreign-base.install = yes
 ctypes-foreign-base.install_native_objects = yes
 ctypes-foreign-base.threads = no
 ctypes-foreign-base.dir = src/ctypes-foreign-base
-ctypes-foreign-base.deps = bytes
+# ctypes-foreign-base.deps = bytes
 ctypes-foreign-base.subproject_deps = ctypes
 ctypes-foreign-base.extra_mls = libffi_abi.ml dl.ml
 ctypes-foreign-base.extra_cs = dl_stubs.c
-ctypes-foreign-base.link_flags = $(libffi_lib) $(lib_process)
+ctypes-foreign-base.link_flags = $(libffi_lib) $(lib_process) $OCAML_LIB
 ctypes-foreign-base.cmo_opts = $(OCAML_FFI_INCOPTS:%=-ccopt %)
 ctypes-foreign-base.cmx_opts = $(OCAML_FFI_INCOPTS:%=-ccopt %)
 
@@ -123,7 +123,7 @@ ctypes-foreign-unthreaded: $$(LIB_TARGETS)
 ctypes-top.public = ctypes_printers
 ctypes-top.dir = src/ctypes-top
 ctypes-top.install = yes
-ctypes-top.deps = compiler-libs
+# ctypes-top.deps = compiler-libs
 ctypes-top.subproject_deps = ctypes
 ctypes-top.install_native_objects = yes
 
@@ -139,16 +139,16 @@ src/ctypes-foreign-base/dl_stubs.c: src/ctypes-foreign-base/dl_stubs.c$(OS_ALT_S
 	cp $< $@
 
 src/ctypes/ctypes_primitives.ml: src/configure/extract_from_c.ml src/configure/gen_c_primitives.ml
-	$(HOSTOCAMLFIND) ocamlc -o gen_c_primitives -package str,bytes -linkpkg $^ -I src/configure
+	ocamlc.opt -o gen_c_primitives str.cma -I src/configure $^
 	./gen_c_primitives > $@ 2> gen_c_primitives.log || (rm $@ && cat gen_c_primitives.log || false)
 
 src/ctypes-foreign-base/libffi_abi.ml: src/configure/extract_from_c.ml src/configure/gen_libffi_abi.ml
-	$(HOSTOCAMLFIND) ocamlc -o gen_libffi_abi -package str,bytes -linkpkg $^ -I src/configure
+	ocamlc.opt -o gen_libffi_abi str.cma -I src/configure $^
 	./gen_libffi_abi > $@ 2> gen_c_primitives.log || (rm $@ && cat gen_c_primitives.log || false)
 
 libffi.config: src/discover/commands.mli src/discover/commands.ml src/discover/discover.ml
-	$(HOSTOCAMLFIND) ocamlc -o discover -package str,bytes -linkpkg $^ -I src/discover
-	./discover -ocamlc "$(OCAMLFIND) ocamlc" > $@ || (rm $@ && false)
+	ocamlc.opt -o discover str.cma -I src/discover $^
+	./discover -ocamlc "ocamlc.opt" > $@ || (rm $@ && false)
 
 asneeded.config:
 	src/discover/determine_as_needed_flags.sh >> $@
