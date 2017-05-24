@@ -82,7 +82,7 @@ ctypes-foreign-base.dir = src/ctypes-foreign-base
 ctypes-foreign-base.subproject_deps = ctypes
 ctypes-foreign-base.extra_mls = libffi_abi.ml dl.ml
 ctypes-foreign-base.extra_cs = dl_stubs.c
-ctypes-foreign-base.link_flags = $(libffi_lib) $(lib_process) $OCAML_LIB
+ctypes-foreign-base.link_flags = $(libffi_lib) $(lib_process)
 ctypes-foreign-base.cmo_opts = $(OCAML_FFI_INCOPTS:%=-ccopt %)
 ctypes-foreign-base.cmx_opts = $(OCAML_FFI_INCOPTS:%=-ccopt %)
 
