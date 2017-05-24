@@ -162,22 +162,22 @@ let brew_libffi_version flags =
   | { Commands.stdout } ->
     String.trim stdout
 
-let pkg_config flags =
+let pkg_config have_pkg_config flags =
   let output =
-    if !is_homebrew then
+    if have_pkg_config then
+      Commands.command "pkg-config %s" flags
+    else
       Commands.command
         "env PKG_CONFIG_PATH=%s/Cellar/libffi/%s/lib/pkgconfig %s/bin/pkg-config %s"
         !homebrew_prefix (brew_libffi_version ()) !homebrew_prefix flags
-    else
-      Commands.command "pkg-config %s" flags
   in
   match output with
     { Commands.status } when status <> 0 -> None
   | { Commands.stdout } -> Some (split (String.trim stdout))
 
-let pkg_config_flags name =
-  match (ksprintf pkg_config "--cflags %s" name,
-         ksprintf pkg_config "--libs %s" name) with
+let pkg_config_flags have_pkg_config name =
+  match (ksprintf (pkg_config have_pkg_config) "--cflags %s" name,
+         ksprintf (pkg_config have_pkg_config) "--libs %s" name) with
     Some opt, Some lib -> Some (opt, lib)
   | _ -> None
 
@@ -199,10 +199,11 @@ let test_libffi setup_data have_pkg_config =
     match get "LIBFFI_CFLAGS", get "LIBFFI_LIBS" with
     | Some opt, Some lib -> (opt, lib)
     | envopt, envlib ->
+    
       let opt, lib =
         if not have_pkg_config then begin
           search_libffi_header ()
-        end else match pkg_config_flags (List.fold_left (fun acc v -> Filename.concat acc v) (Filename.dirname (Sys.getcwd ())) ["libffi"; "_build"; "lib"; "pkgconfig"; "libffi.pc"]) with
+        end else match pkg_config_flags have_pkg_config (List.fold_left (fun acc v -> Filename.concat acc v) (Filename.dirname (Sys.getcwd ())) ["libffi"; "_build"; "lib"; "pkgconfig"; "libffi.pc"]) with
           | Some (pkgopt, pkglib) -> (pkgopt, pkglib)
           | None -> search_libffi_header ()
       in
@@ -266,7 +267,6 @@ let () =
          Commands.command_succeeds "port info libffi");
 
   let have_pkg_config = have_pkg_config !is_homebrew !is_macports homebrew_prefix macports_prefix in
-
   let setup_data = ref [] in
   let have_libffi = test_feature "libffi"
       (fun () -> test_libffi setup_data have_pkg_config) in
