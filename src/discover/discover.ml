@@ -202,7 +202,7 @@ let test_libffi setup_data have_pkg_config =
       let opt, lib =
         if not have_pkg_config then begin
           search_libffi_header ()
-        end else match pkg_config_flags (List.fold_left (fun acc v -> Filename.concat acc v) (Filename.dirname (Sys.getcwd ())) ["reprocessing"; "node_modules"; "libffi"; "_build"; "lib"; "pkgconfig"; "libffi.pc"]) with
+        end else match pkg_config_flags (List.fold_left (fun acc v -> Filename.concat acc v) (Filename.dirname (Sys.getcwd ())) ["libffi"; "_build"; "lib"; "pkgconfig"; "libffi.pc"]) with
           | Some (pkgopt, pkglib) -> (pkgopt, pkglib)
           | None -> search_libffi_header ()
       in
