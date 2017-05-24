@@ -88,46 +88,46 @@ OCAMLFIND_PACKAGE_FLAGS_NATIVE=$(patsubst %,%.cmxa,$($(PROJECT).deps)) \
                         $(patsubst %,-thread,$(THREAD_FLAG)) \
                         $(OCAMLFIND_BISECT_FLAGS)
 $(BUILDDIR)/%.cmxa: $$(NATIVE_OBJECTS)
-  ocamlopt.opt -a -linkall $(OCAMLFLAGS) $(THREAD_FLAG) $(CMXA_OPTS) -o $@ $(NATIVE_OBJECTS) $(OCAML_LINK_FLAGS)
+	ocamlopt.opt -a -linkall $(OCAMLFLAGS) $(THREAD_FLAG) $(CMXA_OPTS) -o $@ $(NATIVE_OBJECTS) $(OCAML_LINK_FLAGS)
 
 $(BUILDDIR)/dll%_stubs$(EXTDLL): $$(C_OBJECTS)
-  $(OCAMLMKLIB) -o $(BUILDDIR)/$*_stubs $^ $(OCAMLMKLIB_FLAGS)
+	$(OCAMLMKLIB) -o $(BUILDDIR)/$*_stubs $^ $(OCAMLMKLIB_FLAGS)
 
 $(BUILDDIR)/dll%_stubs_xen$(EXTDLL): $$(XEN_OBJECTS)
-  $(OCAMLMKLIB) -o $(BUILDDIR)/$*_stubs_xen $^ $(OCAMLMKLIB_FLAGS)
+	$(OCAMLMKLIB) -o $(BUILDDIR)/$*_stubs_xen $^ $(OCAMLMKLIB_FLAGS)
 
 $(BUILDDIR)/%.cmxs : $$(NATIVE_OBJECTS)
-  ocamlopt.opt -shared -linkall $(OCAMLFLAGS) $(THREAD_FLAG) $(OCAMLFIND_PACKAGE_FLAGS_NATIVE) -o $@ $(NATIVE_OBJECTS) $(C_OBJECTS) $(OCAML_LINK_FLAGS)
+	ocamlopt.opt -shared -linkall $(OCAMLFLAGS) $(THREAD_FLAG) $(OCAMLFIND_PACKAGE_FLAGS_NATIVE) -o $@ $(NATIVE_OBJECTS) $(C_OBJECTS) $(OCAML_LINK_FLAGS)
 
 $(BUILDDIR)/%.cma: $$(BYTE_OBJECTS)
-  ocamlc.opt -a $(OCAMLFLAGS) $(THREAD_FLAG) $(CMA_OPTS) $(OCAMLFIND_PACKAGE_FLAGS) -o $@ $(BYTE_OBJECTS) $(OCAML_LINK_FLAGS)
+	ocamlc.opt -a -I $$OCAML_SYSTHREADS $(OCAMLFLAGS) $(THREAD_FLAG) $(CMA_OPTS) $(OCAMLFIND_PACKAGE_FLAGS) -o $@ $(BYTE_OBJECTS) $(OCAML_LINK_FLAGS)
 
 $(BUILDDIR)/%.cmo : %.ml
-  @mkdir -p $(@D)
-  ocamlc.opt -I $$OCAML_SYSTHREADS $(OCAMLFIND_PACKAGE_FLAGS) $(OCAMLFLAGS) $(THREAD_FLAG) $(CMO_OPTS) -c -o $@ $(OCAMLINCLUDES) $<
+	@mkdir -p $(@D)
+	ocamlc.opt -I $$OCAML_SYSTHREADS $(OCAMLFIND_PACKAGE_FLAGS) $(OCAMLFLAGS) $(THREAD_FLAG) $(CMO_OPTS) -c -o $@ $(OCAMLINCLUDES) $<
 
 $(BUILDDIR)/%.cmx : %.ml
-  @mkdir -p $(@D)
-  ocamlopt.opt -bin-annot -c -o $@ -I $$OCAML_SYSTHREADS $(OCAMLFIND_PACKAGE_FLAGS_NATIVE) $(OCAMLFLAGS) $(THREAD_FLAG) $(CMX_OPTS) $(OCAMLINCLUDES) $(filter %.ml,$<)
+	@mkdir -p $(@D)
+	ocamlopt.opt -bin-annot -c -o $@ -I $$OCAML_SYSTHREADS $(OCAMLFIND_PACKAGE_FLAGS_NATIVE) $(OCAMLFLAGS) $(THREAD_FLAG) $(CMX_OPTS) $(OCAMLINCLUDES) $(filter %.ml,$<)
 
 $(BUILDDIR)/%.o : %.c
-  @mkdir -p $(@D)
-  cd $(@D) && ocamlc.opt -c -ccopt -I -ccopt $$OCAML_LIB $(OCAMLFIND_PACKAGE_FLAGS) $(CFLAGS:%=-ccopt %) -o $(@F) $(OCAMLFLAGS) $(realpath $<)
+	@mkdir -p $(@D)
+	cd $(@D) && ocamlc.opt -c -ccopt -I -ccopt $$OCAML_LIB $(OCAMLFIND_PACKAGE_FLAGS) $(CFLAGS:%=-ccopt %) -o $(@F) $(OCAMLFLAGS) $(realpath $<)
 
 $(BUILDDIR)/xen/%.o : %.c
-  @mkdir -p $(@D)
-  cd $(@D) && ocamlc.opt -c -ccopt -I -ccopt $$OCAML_LIB $(OCAMLFIND_PACKAGE_FLAGS) $(XEN_CFLAGS:%=-ccopt %) -o $(@F) $(OCAMLFLAGS) $(realpath $<)
+	@mkdir -p $(@D)
+	cd $(@D) && ocamlc.opt -c -ccopt -I -ccopt $$OCAML_LIB $(OCAMLFIND_PACKAGE_FLAGS) $(XEN_CFLAGS:%=-ccopt %) -o $(@F) $(OCAMLFLAGS) $(realpath $<)
 
 $(BUILDDIR)/%.cmi : %.mli
-  @mkdir -p $(@D)
+	@mkdir -p $(@D)
 ifeq ($(BEST),native)
-  ocamlopt.opt -bin-annot -c -o $@ $(OCAMLFIND_PACKAGE_FLAGS_NATIVE) $(CMI_OPTS) $(OCAMLFLAGS) $(OCAMLINCLUDES) $<
+	ocamlopt.opt -bin-annot -c -o $@ $(OCAMLFIND_PACKAGE_FLAGS_NATIVE) $(CMI_OPTS) $(OCAMLFLAGS) $(OCAMLINCLUDES) $<
 else
-  ocamlc.opt -bin-annot -c -o $@ $(OCAMLFIND_PACKAGE_FLAGS) $(CMI_OPTS) $(OCAMLFLAGS) $(OCAMLINCLUDES) $<
+	ocamlc.opt -bin-annot -c -o $@ $(OCAMLFIND_PACKAGE_FLAGS) $(CMI_OPTS) $(OCAMLFLAGS) $(OCAMLINCLUDES) $<
 endif
 
 $(BUILDDIR)/%.native : $$(NATIVE_OBJECTS) $$(C_OBJECTS)
-  ocamlopt.opt threads.cmxa -I $(BUILDDIR) $(OCAMLFLAGS) $(THREAD_FLAG) $(OCAMLFIND_PACKAGE_FLAGS_NATIVE) $(LOCAL_CMXAS) -o $@ $(NATIVE_OBJECTS) $(C_OBJECTS) $(OCAML_LINK_FLAGS)
+	ocamlopt.opt threads.cmxa -I $(BUILDDIR) $(OCAMLFLAGS) $(THREAD_FLAG) $(OCAMLFIND_PACKAGE_FLAGS_NATIVE) $(LOCAL_CMXAS) -o $@ $(NATIVE_OBJECTS) $(C_OBJECTS) $(OCAML_LINK_FLAGS)
 
 $(BUILDDIR)/%.byte : $$(BYTE_OBJECTS) $$(C_OBJECTS)
-  ocamlc.opt -custom threads.cma -I $(BUILDDIR) $(OCAMLFLAGS) $(THREAD_FLAG) $(OCAMLFIND_PACKAGE_FLAGS) $(LOCAL_CMAS) -o $@ $(BYTE_OBJECTS) $(C_OBJECTS) $(OCAML_LINK_FLAGS)
+	ocamlc.opt -custom threads.cma -I $(BUILDDIR) $(OCAMLFLAGS) $(THREAD_FLAG) $(OCAMLFIND_PACKAGE_FLAGS) $(LOCAL_CMAS) -o $@ $(BYTE_OBJECTS) $(C_OBJECTS) $(OCAML_LINK_FLAGS)
